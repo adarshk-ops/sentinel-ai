@@ -196,21 +196,32 @@ function Dashboard() {
     void loadHistory();
   }, [loadHistory]);
 
-  const beginEmergency = useCallback((evt: DetectionEvent) => {
-    if (!sosPrepRef.current) {
-      toast.info("Preparing location and audio transcript for SOS…");
-      sosReadyRef.current = { lat: null, lng: null, transcript: "" };
-      const p = prepareSosDetails();
+ const beginEmergency = useCallback((evt: DetectionEvent) => {
+  if (!sosPrepRef.current) {
+    toast.info("Preparing location and audio transcript for SOS…");
 
-sosPrepRef.current = p;
+    sosReadyRef.current = {
+      lat: null,
+      lng: null,
+      transcript: "",
+    };
 
-p.then((result) => {
-    sosReadyRef.current = result;
-    console.log("SOS Ready:", result);
-}).catch((err) => {
-    console.error(err);
-});
-    setPendingDetection(evt); },[/*dependencies*/]);
+    const p = prepareSosDetails();
+
+    sosPrepRef.current = p;
+
+    p.then((result) => {
+      sosReadyRef.current = result;
+      console.log("SOS Ready:", result);
+    }).catch((err) => {
+      console.error(err);
+    });
+  }
+
+  // Always set the pending detection
+  setPendingDetection(evt);
+
+}, []);
 
   const { enabled, start, stop, transcript, level, supported, failureReason } = useSafetyMode({
     onEmergency: beginEmergency,
