@@ -270,13 +270,16 @@ const {
         : lastKnownPosition
         ? `https://maps.google.com/?q=${lastKnownPosition.lat},${lastKnownPosition.lng}`
         : "Location unavailable";
+    const time = new Date().toLocaleString();
     const heardLine = heard ? `\nHeard: "${heard.slice(0, 240)}"` : "";
     const msg = `EMERGENCY! ${displayName || "Someone"} may be in danger.\nLocation: ${mapsLink}\nTime: ${time}${heardLine}\n— Sent by Sentinel AI`;
 
     if (contacts.length > 0) {
       const numbers = contacts.map((c) => cleanSmsNumber(c.contact_number)).filter(Boolean);
+      console.log("Contacts", numbers);
       if (numbers.length > 0) {
         // Fire the SMS handoff IMMEDIATELY, still inside the click gesture.
+        console.log("Opening SMS...");
         openSmsDirectly(getSmsHrefs(numbers, msg));
         toast.info("Opening Messages app…");
       } else {
